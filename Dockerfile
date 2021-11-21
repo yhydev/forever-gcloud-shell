@@ -1,3 +1,5 @@
 FROM google/cloud-sdk:slim
-RUN curl https://raw.githubusercontent.com/yhydev/forever-gcloud-shell/main/init.sh > entrypoint.sh
-CMD ["sh","entrypoint.sh"]
+RUN mkdir ~/.ssh &&\
+    ssh-keygen -f /root/.ssh/google_compute_engine -N '' &&\
+    curl -X POST   https://accounts.google.com/o/oauth2/token   -H 'content-type: application/x-www-form-urlencoded' -d "grant_type=refresh_token&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&refresh_token=$REFRESH_TOKEN"|grep access|awk -F\" '{print $4}' > gcloud_access_token
+gcloud alpha cloud-shell ssh --command 'echo'  --access-token-file gcloud_access_token
